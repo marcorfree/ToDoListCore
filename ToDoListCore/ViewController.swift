@@ -89,57 +89,37 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     
-    func deleteCoreData() {
+    func deleteCoreData(itemName: String) {
         
         let appDel1:AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let context1:NSManagedObjectContext = appDel1.managedObjectContext
 
         
-        let predicate = NSPredicate(format: "objectID == %@", objectIDFromNSManagedObject)
+/*        let predicate = NSPredicate(format: "objectID == %@", objectIDFromNSManagedObject)
         let fetchRequest = NSFetchRequest(entityName: "Activities")
         fetchRequest.predicate = predicate
-    
-        
-        do {
-            let fetchedEntities = try context1.executeFetchRequest(fetchRequest) as! [NSManagedObject]
-            if let entityToDelete = fetchedEntities.first {
-                context1.deleteObject(entityToDelete)
-            }
-        } catch {
-            print("There was an error in deleting data (1/2)")
-        }
-        
-        do {
-            try context1.save()
-        } catch {
-            print("There was an error in deleting data (2/2)")
-        }
-
-        
-        
-        
-        
-        
-        
+*/
         let fetchRequest = NSFetchRequest(entityName: "Activities")
         fetchRequest.includesSubentities = false
         fetchRequest.returnsObjectsAsFaults = false
-        
-        fetchRequest.predicate = NSPredicate(format:"name == '\(itemName)'")
-        
-        var error: NSError?
-        
-        // moc is your NSManagedObjectContext here
-        items = moc.executeFetchRequest(fetchRequest, error: &error)!
-        
-        for item in items {
-            moc.deleteObject(item)
+        fetchRequest.predicate = NSPredicate(format:"activity == '\(itemName)'")
+
+        do {
+            let fetchedEntities = try context1.executeFetchRequest(fetchRequest) as! [NSManagedObject]
+          if let entityToDelete = fetchedEntities.first {
+
+            context1.deleteObject(entityToDelete)
+        }
+        } catch {
+        print("There was an error in deleting data (1/2)")
         }
         
-        
-        
-        
-        
+        do {
+        try context1.save()
+        } catch {
+        print("There was an error in deleting data (2/2)")
+    }
+
     }
     
     
@@ -184,6 +164,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         
         if editingStyle == UITableViewCellEditingStyle.Delete {
+            deleteCoreData(TDL[indexPath.row])
             TDL.removeAtIndex(indexPath.row)
             TableView1.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Fade)
             
